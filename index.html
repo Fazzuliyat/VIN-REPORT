@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClearVIN — Vehicle History &amp; Recall Lookup</title>
+<meta name="description" content="Decode any VIN for free, then unlock a full report covering recalls, safety complaints and title data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <svg class="brand-mark" width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="15" fill="#123F7D" stroke="#3E82D8" stroke-width="1.4"/>
+        <path d="M10 16.5 L14 20.5 L22 11.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      ClearVIN
+    </a>
+    <nav class="site-nav">
+      <a href="#how">How it works</a>
+      <a href="sample-report.html">Sample report</a>
+      <a href="#faq">FAQ</a>
+      <a href="#scanner" class="btn btn-primary">Check a VIN</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="scanner">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow">✓ Built on official NHTSA vehicle data</div>
+        <h1>Know exactly what you're buying before you sign anything.</h1>
+        <p class="lede">Enter any 17-digit VIN to pull free factory specs instantly, then unlock the full report — open recalls, safety complaints, and title-brand guidance — for one flat fee.</p>
+
+        <div class="vin-scanner" id="scannerBox">
+          <div class="scan-line"></div>
+          <label for="vinInput">Vehicle identification number</label>
+          <div class="vin-scan-row">
+            <input id="vinInput" maxlength="17" placeholder="e.g. 1HGCM82633A004352" autocomplete="off" spellcheck="false">
+            <button class="btn btn-primary" id="decodeBtn">Decode free</button>
+          </div>
+          <div class="vin-hint">No card required for the free decode. 17 characters, no I, O or Q.</div>
+          <div class="decode-preview" id="decodePreview"></div>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g class="scan-ring">
+            <circle cx="200" cy="130" r="95" stroke="#3E82D8" stroke-opacity=".35" stroke-width="1"/>
+            <circle cx="200" cy="130" r="70" stroke="#3E82D8" stroke-opacity=".25" stroke-width="1"/>
+          </g>
+          <g class="scan-beam">
+            <line x1="200" y1="130" x2="200" y2="35" stroke="#3E82D8" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          </g>
+          <ellipse cx="200" cy="245" rx="130" ry="12" fill="#091120"/>
+          <path d="M85 175 L106 122 Q115 110 132 110 H268 Q285 110 294 122 L315 175 Z" fill="#16233A" stroke="#3E82D8" stroke-width="1.4"/>
+          <rect x="66" y="170" width="268" height="40" rx="10" fill="#101B2D" stroke="#3E82D8" stroke-width="1.4"/>
+          <rect x="140" y="120" width="55" height="30" rx="4" fill="#0C1526" stroke="#5595e0" stroke-width="1"/>
+          <rect x="205" y="120" width="55" height="30" rx="4" fill="#0C1526" stroke="#5595e0" stroke-width="1"/>
+          <circle cx="130" cy="208" r="18" fill="#0C1526" stroke="#9FC3DC" stroke-width="2"/>
+          <circle cx="270" cy="208" r="18" fill="#0C1526" stroke="#9FC3DC" stroke-width="2"/>
+          <g class="float-card">
+            <rect x="150" y="55" width="100" height="26" rx="5" fill="#0E1826" stroke="#3E82D8"/>
+            <text x="200" y="72" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#9FC3DC" letter-spacing="2">VIN VERIFIED</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg> Secure PayPal checkout</div>
+      <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 8h16"/></svg> Sourced from public NHTSA data</div>
+      <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Report delivered instantly</div>
+      <div class="trust-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg> No account or subscription</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Process</div>
+      <h2>Two steps, no account needed</h2>
+    </div>
+    <div class="spec-grid">
+      <div class="spec-card reveal">
+        <div class="tag">STEP — DECODE</div>
+        <h3>Free instant decode</h3>
+        <p>Year, make, model, trim, engine and plant of manufacture, pulled live from the U.S. Department of Transportation's public VIN registry.</p>
+      </div>
+      <div class="spec-card reveal">
+        <div class="tag">STEP — UNLOCK</div>
+        <h3>Pay once, unlock the report</h3>
+        <p>Pay securely with PayPal or a card. No subscription — one VIN, one report, yours to keep.</p>
+      </div>
+      <div class="spec-card reveal">
+        <div class="tag">STEP — REVIEW</div>
+        <h3>Read the full picture</h3>
+        <p>Open recalls, safety complaints filed with regulators, and clear guidance on title-brand checks, laid out field by field.</p>
+      </div>
+    </div>
+
+    <div class="sample-card reveal" style="margin-top:28px;">
+      <div>
+        <h3 style="color:#fff; margin-bottom:6px;">Not sure what you're paying for?</h3>
+        <p>See a full, real example report before you enter a card or PayPal detail — same layout, same data sources, a sample VIN.</p>
+      </div>
+      <a href="sample-report.html" class="btn btn-ghost">View sample report →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="pricing">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Pricing</div>
+      <h2>One flat price. No subscription.</h2>
+    </div>
+    <div class="price-panel reveal">
+      <div>
+        <div class="amount">$9.95 <small>/ report</small></div>
+        <ul class="price-includes">
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg> Full factory specifications</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg> Open recall history</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg> Safety complaints on file</li>
+          <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg> Title-brand check guidance</li>
+        </ul>
+        <div class="guarantee-note">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+          Refund if the VIN can't be decoded — see <a href="refund-policy.html">refund policy</a>
+        </div>
+      </div>
+      <div style="min-width:240px;">
+        <span class="badge-warn">⚠ Report unlocks after payment</span>
+        <div id="paypal-button-container" style="margin-top:14px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="section-eyebrow">Questions</div>
+      <h2>Frequently asked</h2>
+    </div>
+    <details class="faq-item reveal" open>
+      <summary>Is this the same as Carfax or AutoCheck?</summary>
+      <p>No, and we want to be upfront about that. Carfax and AutoCheck are approved NMVTIS data providers with access to title, accident, and odometer records. We use free, public NHTSA data for specs, recalls, and safety complaints — a real and useful check, but not a full title history unless a history provider is connected. See the "Title &amp; history flags" section of the report.</p>
+    </details>
+    <details class="faq-item reveal">
+      <summary>Why is the first part free?</summary>
+      <p>The decode step uses a fully public government API with no usage cost to us, so there's no reason to charge for it. The paid report bundles that with recall and complaint lookups and a formatted, save-able page.</p>
+    </details>
+    <details class="faq-item reveal">
+      <summary>How fast do I get my report?</summary>
+      <p>Immediately after payment confirms — the report page loads live the moment your PayPal payment is captured.</p>
+    </details>
+    <details class="faq-item reveal">
+      <summary>What if my VIN won't decode?</summary>
+      <p>Double-check for mixed-up characters (no I, O, or Q ever appear in a VIN). If a valid 17-character VIN still won't decode, contact us before paying — see the refund policy for VINs that fail after payment.</p>
+    </details>
+    <details class="faq-item reveal">
+      <summary>Is my payment secure?</summary>
+      <p>Yes — payment is processed entirely by PayPal; we never see or store your card or bank details.</p>
+    </details>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="margin-bottom:10px;">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="15" fill="#123F7D" stroke="#3E82D8" stroke-width="1.4"/>
+            <path d="M10 16.5 L14 20.5 L22 11.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          ClearVIN
+        </div>
+        <p style="max-width:36ch; font-size:.85rem;">An independent VIN lookup tool built on public NHTSA data. Not affiliated with NHTSA, any state DMV, or any automaker.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#scanner">Check a VIN</a></li>
+          <li><a href="sample-report.html">Sample report</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="terms.html">Terms of service</a></li>
+          <li><a href="privacy.html">Privacy policy</a></li>
+          <li><a href="refund-policy.html">Refund policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Data sources</h4>
+        <ul>
+          <li><a href="https://vpic.nhtsa.dot.gov/api/" target="_blank" rel="noopener">NHTSA vPIC API</a></li>
+          <li><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">NHTSA Recalls</a></li>
+          <li><a href="https://www.nmvtis.gov" target="_blank" rel="noopener">NMVTIS</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> ClearVIN.</span>
+      <span>Support: replace-with-your-email@example.com</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+<script src="config.js"></script>
+<script src="vin-api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

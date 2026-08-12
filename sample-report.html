@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample Report — ClearVIN</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="15" fill="#123F7D" stroke="#3E82D8" stroke-width="1.4"/>
+        <path d="M10 16.5 L14 20.5 L22 11.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      ClearVIN
+    </a>
+    <nav class="site-nav"><a href="index.html#scanner" class="btn btn-primary">Check your own VIN</a></nav>
+  </div>
+</header>
+
+<div class="report-header">
+  <div class="container">
+    <div class="hero-eyebrow">// Sample report — for illustration only</div>
+    <div class="report-vin">1HGCM82633A004352</div>
+  </div>
+</div>
+
+<main class="section">
+  <div class="container">
+    <h2 style="margin-bottom:4px;">Vehicle specifications</h2>
+    <p class="section-eyebrow" style="margin-bottom:20px;">Source: NHTSA vPIC public VIN registry</p>
+    <table class="data-table">
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>Year</td><td>2003</td></tr>
+      <tr><td>Make</td><td>Honda</td></tr>
+      <tr><td>Model</td><td>Accord</td></tr>
+      <tr><td>Body class</td><td>Sedan/Saloon</td></tr>
+      <tr><td>Engine cylinders</td><td>6</td></tr>
+      <tr><td>Fuel type</td><td>Gasoline</td></tr>
+      <tr><td>Plant country</td><td>United States</td></tr>
+    </table>
+
+    <h2 style="margin-top:48px;">Open recalls</h2>
+    <p><span class="status-pill status-flag">Example: 1 recall shown for illustration</span></p>
+    <div class="recall-item">
+      <h4>Air bags</h4>
+      <p>Example recall text — on a real report this pulls live from NHTSA for the decoded make/model/year.</p>
+    </div>
+
+    <h2 style="margin-top:48px;">Safety complaints on file</h2>
+    <p class="section-eyebrow">Example: complaint count and summaries load live on a real report</p>
+
+    <h2 style="margin-top:48px;">Title &amp; history flags</h2>
+    <div class="history-placeholder">
+      <p><span class="status-pill status-locked">Not yet connected</span></p>
+      <p>This is where accident, salvage/flood, and odometer records appear once a paid history provider is connected — see the FAQ for why this isn't free anywhere online.</p>
+    </div>
+
+    <div class="disclaimer">
+      This is a static sample for illustration. Your actual report loads live data for the VIN you enter.
+    </div>
+
+    <p style="margin-top:40px;"><a href="index.html#scanner" class="btn btn-primary" style="display:inline-block;text-decoration:none;">Check your own VIN →</a></p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container"><p>© <span id="year"></span> ClearVIN.</p></div>
+</footer>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
