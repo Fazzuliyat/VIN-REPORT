@@ -29,7 +29,7 @@
   </div>
 </header>
 
-<section class="hero" id="scanner">
+<section class="hero bg-layered" id="scanner">
   <div class="container hero-inner">
     <div class="hero-grid">
       <div>
@@ -45,6 +45,11 @@
             <button class="btn btn-primary" id="decodeBtn">Decode free</button>
           </div>
           <div class="vin-hint">No card required for the free decode. 17 characters, no I, O or Q.</div>
+          <details class="countries-note" id="countriesNote">
+            <summary>Manufacturing countries covered by this decoder</summary>
+            <div class="countries-list" id="countriesList">Loading…</div>
+            <p class="countries-caveat">Sourced live from NHTSA's public registry, which is built around vehicles sold or imported into the U.S. — coverage for VINs never sold in the U.S. may be limited even if the plant country is listed.</p>
+          </details>
           <div class="decode-preview" id="decodePreview"></div>
         </div>
       </div>
@@ -114,7 +119,7 @@
         <h3>Not sure what you're paying for?</h3>
         <p>See a full, real example report before you enter a card or PayPal detail — same layout, same data sources, a sample VIN.</p>
       </div>
-      <a href="sample-report.html" class="btn btn-ghost">View sample report →</a>
+      <a href="sample-report.html" class="btn btn-secondary">View sample report →</a>
     </div>
   </div>
 </section>
@@ -144,7 +149,7 @@
     </div>
     <div class="price-panel reveal">
       <div>
-        <div class="amount">$9.95 <small>/ report</small></div>
+        <div class="amount">$14.99 <small>/ report</small></div>
         <ul class="price-includes">
           <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg> Full factory specifications</li>
           <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg> Open recall history</li>
@@ -156,9 +161,31 @@
           Refund if the VIN can't be decoded — see <a href="refund-policy.html">refund policy</a>
         </div>
       </div>
-      <div style="min-width:240px;">
+      <div style="min-width:280px;">
         <span class="badge-warn">⚠ Report unlocks after payment</span>
-        <div id="paypal-button-container" style="margin-top:14px;"></div>
+        <div style="margin-top:14px;">
+          <div class="pay-tabs" role="tablist">
+            <button type="button" class="pay-tab active" id="tabPaypal">PayPal</button>
+            <button type="button" class="pay-tab" id="tabCard">Credit / debit card</button>
+          </div>
+          <div class="pay-panel active" id="panelPaypal">
+            <div id="paypal-button-container"></div>
+          </div>
+          <div class="pay-panel" id="panelCard">
+            <div id="cardSetupNotice" class="card-setup-notice hidden">
+              Card payments aren't configured on this deployment yet — add a Stripe publishable key and backend URL in <code>config.js</code>. See the README.
+            </div>
+            <form id="cardForm">
+              <div class="card-field-wrap"><div id="card-element"></div></div>
+              <button type="submit" class="btn btn-primary" id="cardSubmitBtn" style="width:100%;">Pay $14.99</button>
+              <div id="cardError" style="color:var(--red); font-size:.82rem; margin-top:8px;"></div>
+            </form>
+            <div class="pay-note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+              Card details are entered directly into Stripe's secure form and never touch our servers.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -270,6 +297,7 @@
 </footer>
 
 <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="config.js"></script>
 <script src="vin-api.js"></script>
 <script src="app.js"></script>

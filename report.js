@@ -1,26 +1,44 @@
 document.getElementById("year").textContent = new Date().getFullYear();
+document.body.classList.add("report-body");
 
 const params = new URLSearchParams(window.location.search);
 const vin = (params.get("vin") || sessionStorage.getItem("tvr_vin") || "").toUpperCase();
 document.getElementById("reportVin").textContent = vin || "NO VIN PROVIDED";
 
-/**
- * MVP payment check — see the security note in app.js and README.md.
- * This only checks a flag in the current browser's sessionStorage,
- * which is NOT tamper-proof. Replace this block with a call to your
- * backend (e.g. GET /api/orders/:orderId) that confirms the PayPal
- * order was actually captured server-side before rendering data.
- */
-const paid = sessionStorage.getItem("tvr_paid") === "true";
-
 const lockedNotice = document.getElementById("lockedNotice");
 const reportBody = document.getElementById("reportBody");
+const cfg = window.CLEARVIN_CONFIG || {};
 
-if (!paid || !isValidVin(vin)) {
-  lockedNotice.classList.remove("hidden");
-} else {
-  reportBody.classList.remove("hidden");
-  loadReport(vin);
+checkPaymentAndLoad();
+
+/**
+ * Confirms payment before showing report data. If a backend is configured
+ * (config.js -> backendBaseUrl), this asks the backend's order log —
+ * built from the real PayPal capture / Stripe webhook, not anything the
+ * browser can fake. Without a backend configured, it falls back to the
+ * sessionStorage flag from app.js, which is fine for local testing but
+ * NOT tamper-proof — see the security note in app.js and README.md.
+ */
+async function checkPaymentAndLoad() {
+  let paid = sessionStorage.getItem("tvr_paid") === "true";
+  const orderId = sessionStorage.getItem("tvr_order_id");
+
+  if (cfg.backendBaseUrl && orderId) {
+    try {
+      const res = await fetch(`${cfg.backendBaseUrl}/api/orders/${encodeURIComponent(orderId)}/status`);
+      const data = await res.json();
+      paid = !!data.paid;
+    } catch {
+      // backend unreachable — fall back to the sessionStorage flag already read above
+    }
+  }
+
+  if (!paid || !isValidVin(vin)) {
+    lockedNotice.classList.remove("hidden");
+  } else {
+    reportBody.classList.remove("hidden");
+    loadReport(vin);
+  }
 }
 
 async function loadReport(vin) {
@@ -34,25 +52,46 @@ async function loadReport(vin) {
     ]);
     renderRecalls(recalls);
     renderComplaints(complaints);
-    await renderHistorySection(vin);
+    const historyStatus = await renderHistorySection(vin);
+    renderSummary(recalls.length, complaints.length, historyStatus);
   } catch (err) {
     console.error(err);
     reportBody.insertAdjacentHTML("beforeend", `<p style="color:var(--red)">Something went wrong loading live data. Please refresh.</p>`);
   }
 }
 
+function renderSummary(recallCount, complaintCount, historyStatus) {
+  const el = document.getElementById("reportSummary");
+  const recallTone = recallCount > 0 ? "var(--red)" : "var(--green)";
+  el.innerHTML = `
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">Open recalls</div>
+        <div class="summary-value" style="color:${recallTone}">${recallCount}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Safety complaints</div>
+        <div class="summary-value">${complaintCount}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Title &amp; history</div>
+        <div class="summary-value" style="font-size:1.1rem;">${historyStatus}</div>
+      </div>
+    </div>`;
+}
+
 /**
  * Title / accident / odometer history — the one part of a "full" vehicle
- * report that NHTSA's free APIs do not cover. This checks config.js for a
- * connected provider (see README "Adding a paid vehicle history API") and
- * falls back to an honest explanation instead of pretending to have data
- * we don't.
+ * report that NHTSA's free APIs do not cover. Checks config.js for a
+ * connected provider and falls back to an honest explanation instead of
+ * pretending to have data we don't. Returns a short status string used
+ * in the summary cards above.
  */
 async function renderHistorySection(vin) {
   const el = document.getElementById("historySection");
-  const cfg = window.CLEARVIN_CONFIG && window.CLEARVIN_CONFIG.vehicleHistoryApi;
+  const historyCfg = cfg.vehicleHistoryApi;
 
-  if (!cfg || !cfg.enabled || !cfg.endpoint) {
+  if (!historyCfg || !historyCfg.enabled || !historyCfg.endpoint) {
     el.innerHTML = `
       <div class="history-placeholder">
         <p><span class="status-pill status-locked">Not yet connected</span></p>
@@ -60,19 +99,21 @@ async function renderHistorySection(vin) {
         NMVTIS-approved data providers under a paid agreement (the same gate Carfax and AutoCheck go through).
         Once a provider is connected in <code>config.js</code>, results appear here automatically.</p>
       </div>`;
-    return;
+    return "Not connected";
   }
 
   try {
-    const res = await fetch(`${cfg.endpoint}?vin=${encodeURIComponent(vin)}`);
+    const res = await fetch(`${historyCfg.endpoint}?vin=${encodeURIComponent(vin)}`);
     if (!res.ok) throw new Error("history lookup failed");
     const data = await res.json();
     el.innerHTML = `<table class="data-table">
       <tr><th>Field</th><th>Value</th></tr>
       ${Object.entries(data).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("")}
     </table>`;
+    return "Checked";
   } catch (err) {
     el.innerHTML = `<p style="color:var(--red)">Couldn't load title/history data right now. Please refresh.</p>`;
+    return "Error";
   }
 }
 

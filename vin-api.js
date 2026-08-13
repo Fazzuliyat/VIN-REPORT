@@ -55,3 +55,31 @@ async function getComplaints(make, model, year) {
   const data = await res.json();
   return data.results || [];
 }
+
+/**
+ * "Supported countries" — pulled from the same free vPIC API, using its
+ * GetVehicleVariableValuesList endpoint for the "Plant Country" field.
+ * This returns every country NHTSA has on file as a vehicle manufacturing
+ * location, which is the honest way to answer "what does this cover" —
+ * NOT a marketing list. vPIC's own documentation notes it represents
+ * vehicles sold or imported into the U.S., so coverage for VINs that
+ * never touched the U.S. market may be limited even if the plant
+ * country itself is listed. See README for how this is worded on-site.
+ */
+async function getSupportedCountries() {
+  const cacheKey = "tvr_plant_countries";
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) return JSON.parse(cached);
+
+  const url = `${VPIC_BASE}/GetVehicleVariableValuesList/Plant%20Country?format=json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Could not load supported countries");
+  const data = await res.json();
+  const countries = (data.Results || [])
+    .map((r) => (r.Name || r.name || "").trim())
+    .filter((name) => name && name.toUpperCase() !== "NOT APPLICABLE")
+    .sort((a, b) => a.localeCompare(b));
+
+  sessionStorage.setItem(cacheKey, JSON.stringify(countries));
+  return countries;
+}

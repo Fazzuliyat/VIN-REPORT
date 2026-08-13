@@ -11,6 +11,24 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
 
+/* supported countries — loaded lazily, only when the details element is opened,
+   so we don't spend an API call on every page view */
+const countriesNote = document.getElementById("countriesNote");
+if (countriesNote) {
+  let loaded = false;
+  countriesNote.addEventListener("toggle", async () => {
+    if (!countriesNote.open || loaded) return;
+    loaded = true;
+    const listEl = document.getElementById("countriesList");
+    try {
+      const countries = await getSupportedCountries();
+      listEl.innerHTML = countries.map((c) => `<span>${c}</span>`).join("");
+    } catch {
+      listEl.textContent = "Couldn't load the country list right now.";
+    }
+  });
+}
+
 const vinInput = document.getElementById("vinInput");
 const decodeBtn = document.getElementById("decodeBtn");
 const scannerBox = document.getElementById("scannerBox");
@@ -79,23 +97,107 @@ function renderPreviewLine(type, key, value, delayIndex = 0) {
 }
 
 /* ------------------------------------------------------------------
- * PayPal Smart Buttons
- * ------------------------------------------------------------------
- * IMPORTANT — read before going live:
- * This client-side flow is fine for testing, but on its own it is
- * NOT secure: anyone could open the browser console and set
- * tvr_paid = "true" without paying. For a real launch, move order
- * creation + capture to a backend (see /backend in this project)
- * and have report.html ask your backend "was this order actually
- * captured?" instead of trusting sessionStorage. Full explanation
- * in README.md.
+ * Payment method tabs (PayPal / Card)
  * ------------------------------------------------------------------ */
+const tabPaypal = document.getElementById("tabPaypal");
+const tabCard = document.getElementById("tabCard");
+const panelPaypal = document.getElementById("panelPaypal");
+const panelCard = document.getElementById("panelCard");
+
+function activateTab(which) {
+  const isPaypal = which === "paypal";
+  tabPaypal.classList.toggle("active", isPaypal);
+  tabCard.classList.toggle("active", !isPaypal);
+  panelPaypal.classList.toggle("active", isPaypal);
+  panelCard.classList.toggle("active", !isPaypal);
+}
+if (tabPaypal && tabCard) {
+  tabPaypal.addEventListener("click", () => activateTab("paypal"));
+  tabCard.addEventListener("click", () => activateTab("card"));
+}
+
+/* ------------------------------------------------------------------
+ * Stripe — card payments
+ * ------------------------------------------------------------------
+ * Requires both a Stripe publishable key AND a deployed backend
+ * (Stripe needs a server-side secret key to create the PaymentIntent —
+ * see backend/server.js). If either is missing from config.js, we
+ * show a setup notice instead of a form that can't actually charge
+ * anyone.
+ * ------------------------------------------------------------------ */
+const cfg = window.CLEARVIN_CONFIG || {};
+const cardReady = window.Stripe && cfg.stripePublishableKey && cfg.stripePublishableKey !== "YOUR_STRIPE_PUBLISHABLE_KEY" && cfg.backendBaseUrl;
+
+let stripe, cardElement;
+if (cardReady) {
+  stripe = Stripe(cfg.stripePublishableKey);
+  const elements = stripe.elements();
+  cardElement = elements.create("card", {
+    style: { base: { fontSize: "16px", fontFamily: "Inter, sans-serif", color: "#16212E", "::placeholder": { color: "#9AA8B4" } } },
+  });
+  cardElement.mount("#card-element");
+} else {
+  const notice = document.getElementById("cardSetupNotice");
+  const submitBtn = document.getElementById("cardSubmitBtn");
+  if (notice) notice.classList.remove("hidden");
+  if (submitBtn) submitBtn.disabled = true;
+}
+
+const cardForm = document.getElementById("cardForm");
+if (cardForm) {
+  cardForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!cardReady) return;
+
+    const vin = sessionStorage.getItem("tvr_vin");
+    const errorEl = document.getElementById("cardError");
+    const submitBtn = document.getElementById("cardSubmitBtn");
+    errorEl.textContent = "";
+
+    if (!vin) {
+      errorEl.textContent = "Please decode a VIN first, then complete payment.";
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="loader"></span>';
+
+    try {
+      const res = await fetch(`${cfg.backendBaseUrl}/api/stripe/create-intent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vin }),
+      });
+      const { clientSecret, id, error } = await res.json();
+      if (error) throw new Error(error);
+
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement },
+      });
+
+      if (result.error) throw new Error(result.error.message);
+
+      if (result.paymentIntent.status === "succeeded") {
+        sessionStorage.setItem("tvr_paid", "true");
+        sessionStorage.setItem("tvr_order_id", id);
+        sessionStorage.setItem("tvr_order_provider", "stripe");
+        window.location.href = `report.html?vin=${encodeURIComponent(vin)}`;
+      }
+    } catch (err) {
+      errorEl.textContent = err.message || "Payment could not be completed. Please try again.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Pay $14.99";
+    }
+  });
+}
+
 if (window.paypal) {
   paypal.Buttons({
     style: { layout: "vertical", color: "black", shape: "rect", label: "paypal" },
     createOrder: function (data, actions) {
       return actions.order.create({
-        purchase_units: [{ amount: { value: "9.95", currency_code: "USD" } }],
+        purchase_units: [{ amount: { value: "14.99", currency_code: "USD" } }],
       });
     },
     onApprove: function (data, actions) {
@@ -107,6 +209,7 @@ if (window.paypal) {
         }
         sessionStorage.setItem("tvr_paid", "true");
         sessionStorage.setItem("tvr_order_id", details.id);
+        sessionStorage.setItem("tvr_order_provider", "paypal");
         window.location.href = `report.html?vin=${encodeURIComponent(vin)}`;
       });
     },

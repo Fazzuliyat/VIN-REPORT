@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vehicle Report — ClearVIN</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,7 +13,7 @@
   <div class="container">
     <a href="index.html" class="brand">
       <svg class="brand-mark" width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="16" cy="16" r="15" fill="#123F7D" stroke="#3E82D8" stroke-width="1.4"/>
+        <circle cx="16" cy="16" r="15" fill="#0F3F73" stroke="#3E82D8" stroke-width="1.4"/>
         <path d="M10 16.5 L14 20.5 L22 11.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       ClearVIN
@@ -22,38 +22,50 @@
   </div>
 </header>
 
-<div class="report-header">
+<div class="report-header bg-layered">
   <div class="container">
     <div class="hero-eyebrow">// Full report</div>
     <div class="report-vin" id="reportVin">—</div>
   </div>
 </div>
 
+<div class="container">
+  <div id="reportSummary" class="report-summary"></div>
+</div>
+
 <div id="lockedNotice" class="section hidden">
   <div class="container">
     <h2>This report hasn't been unlocked yet</h2>
-    <p>We couldn't confirm payment for this VIN in this browser session. If you already paid, go back and use the
-    link from your confirmation, or contact support with your PayPal order ID.</p>
+    <p>We couldn't confirm payment for this VIN. If you already paid, go back and use the
+    link from your confirmation, or contact support with your order ID.</p>
     <p><a class="btn btn-primary" href="index.html" style="display:inline-block;text-decoration:none;">Back to lookup</a></p>
   </div>
 </div>
 
-<main id="reportBody" class="section hidden">
+<main id="reportBody" class="section hidden" style="padding-top:0;">
   <div class="container">
 
-    <h2 style="margin-bottom:4px;">Vehicle specifications</h2>
-    <p class="section-eyebrow" style="margin-bottom:20px;">Source: NHTSA vPIC public VIN registry</p>
-    <table class="data-table" id="specTable"></table>
+    <div class="report-section">
+      <h2 style="margin-bottom:4px;">Vehicle specifications</h2>
+      <p class="section-eyebrow" style="margin-bottom:20px;">Source: NHTSA vPIC public VIN registry</p>
+      <table class="data-table" id="specTable"></table>
+    </div>
 
-    <h2 style="margin-top:48px;">Open recalls</h2>
-    <div id="recallsList"></div>
+    <div class="report-section">
+      <h2 style="margin-top:0;">Open recalls</h2>
+      <div id="recallsList"></div>
+    </div>
 
-    <h2 style="margin-top:48px;">Safety complaints on file</h2>
-    <p id="complaintsSummary" class="section-eyebrow"></p>
-    <table class="data-table" id="complaintsTable"></table>
+    <div class="report-section">
+      <h2 style="margin-top:0;">Safety complaints on file</h2>
+      <p id="complaintsSummary" class="section-eyebrow"></p>
+      <table class="data-table" id="complaintsTable"></table>
+    </div>
 
-    <h2 style="margin-top:48px;">Title &amp; history flags</h2>
-    <div id="historySection"></div>
+    <div class="report-section">
+      <h2 style="margin-top:0;">Title &amp; history flags</h2>
+      <div id="historySection"></div>
+    </div>
 
     <div class="disclaimer">
       ClearVIN is an independent lookup tool, not affiliated with NHTSA, any state DMV, or any automaker.
